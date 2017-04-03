@@ -1,0 +1,176 @@
+<html>
+  <head>
+    <title>Big Data Project I: Trump Tweets Analytics</title>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+      $(document).ready(function() {
+        google.charts.load('current', {'packages':['corechart', 'table']});
+        google.charts.setOnLoadCallback(drawCharts);
+      });
+
+      function drawCharts() {
+        ex1();
+        ex2();
+        ex3();
+        ex4();
+        ex5();
+        ex6();
+      }
+
+      function ex1() {
+        $.get('ex1.txt', function(data) {
+          var out = [['Word', 'Count']];
+          var lines = data.split(/\r\n|\n/);
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "" || split[0] == "TRUMP") continue;
+            out.push([split[0], parseInt(split[1])]);
+          }
+
+          //console.log(out);
+          var data = google.visualization.arrayToDataTable(out);
+          var options = {title: 'Selected word occurrences in Tweets (Ex1)'};
+          var chart = new google.visualization.PieChart(document.getElementById('ex1'));
+          chart.draw(data, options);
+        });
+      }
+
+      function ex2() {
+        $.get('ex2.txt', function(data) {
+          var out = [['Word', 'Count', {role: 'style'}]];
+          var lines = data.split(/\r\n|\n/);
+          var found = 0;
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "" || split[0] == "TRUMP" || split[0] == "RT") continue;
+            out.push([split[0], parseInt(split[1]), getRandomColor()]);
+            if (++found >= 20) break;
+          }
+
+          //console.log(out);
+          var data = google.visualization.arrayToDataTable(out);
+          var options = {title: 'Word occurrences in Tweets (Ex2)', bar: {groupWidth: '95%;'}, legend: {position: 'none'}};
+          var chart = new google.visualization.BarChart(document.getElementById('ex2'));
+          chart.draw(data, options);
+        });
+      }
+
+      function ex3() {
+        $.get('ex3.txt', function(data) {
+          var out = [];
+          var found = 0;
+          var lines = data.split(/\r\n|\n/);
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "") continue;
+            out.push([split[0]]);
+            if (++found >= 500) break;
+          }
+
+          //console.log(out);
+          var data = new google.visualization.DataTable();
+          data.addColumn('string', 'Screen Name');
+          data.addRows(out);
+
+          var options = {showRowNumber: true, width: '100%', height: '100%'};
+          var chart = new google.visualization.Table(document.getElementById('ex3'));
+          chart.draw(data, options);
+        });
+      }
+
+      function ex4() {
+        $.get('ex4.txt', function(data) {
+          var out = [['Tweet', 'Count of Retweets', {role: 'style'}]];
+          var lines = data.split(/\r\n|\n/);
+          var found = 0;
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "") continue;
+            out.push([split[0], parseInt(split[1]), getRandomColor()]);
+            if (++found >= 20) break;
+          }
+
+          //console.log(out);
+          var data = google.visualization.arrayToDataTable(out);
+          var options = {title: 'Tweets with count of retweets (Ex4)', bar: {groupWidth: '95%;'}, legend: {position: 'none'}};
+          var chart = new google.visualization.BarChart(document.getElementById('ex4'));
+          chart.draw(data, options);
+        });
+      }
+
+      function ex5() {
+        $.get('ex5.txt', function(data) {
+          var out = [['Tweet', 'Count of Replies', {role: 'style'}]];
+          var lines = data.split(/\r\n|\n/);
+          var found = 0;
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "") continue;
+            out.push([split[0], parseInt(split[1]), getRandomColor()]);
+            if (++found >= 20) break;
+          }
+
+          //console.log(out);
+          var data = google.visualization.arrayToDataTable(out);
+          var options = {title: 'Tweets with count of replies to it (Ex5)', bar: {groupWidth: '95%;'}, legend: {position: 'none'}};
+          var chart = new google.visualization.BarChart(document.getElementById('ex5'));
+          chart.draw(data, options);
+        });
+      }
+
+      function ex6() {
+        $.get('ex6.txt', function(data) {
+          var out = [['Screen Name', 'Tweet IDs', {role: 'style'}]];
+          var lines = data.split(/\r\n|\n/);
+          var found = 0;
+          var col = "";
+          var temp;
+
+          for (i = 0; i < lines.length; i++) {
+            var split = lines[i].split("\t");
+            if (split[0] == "") continue;
+
+            temp = [];
+            for (e = 2; e < split.length; e++) temp.push(split[e]);
+            col = split[1] + ": " + temp.join(", ");
+
+            out.push([split[0], {v: parseInt(split[1]), f: col}, getRandomColor()]);
+            if (++found >= 20) break;
+          }
+
+          //console.log(out);
+          var data = google.visualization.arrayToDataTable(out);
+          var options = {title: 'Top 20 screen names with count and Tweet IDs (Ex6)', pieHole: 0.4};
+          var chart = new google.visualization.PieChart(document.getElementById('ex6'));
+          chart.draw(data, options);
+        });
+      }
+
+      /* From: http://stackoverflow.com/questions/1484506/random-color-generator-in-javascript */
+      function getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++ ) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="ex1" style="width: 900px; height: 500px;"></div>
+    <div id="ex2" style="width: 900px; height: 700px;"></div>
+    <b>500 Unique screen names that tweeted "Trump" (Ex3)</b>
+    <div id="ex3" style="width: 900px; height: 500px;"></div>
+    <div id="ex4" style="width: 100%; height: 700px;"></div>
+    <div id="ex5" style="width: 100%; height: 700px;"></div>
+    <div id="ex6" style="width: 75%; height: 700px;"></div>
+  </body>
+</html>
